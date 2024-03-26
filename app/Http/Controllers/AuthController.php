@@ -38,14 +38,14 @@ class AuthController extends Controller
 
         User::create($user);
 
-        Auth::login($user);
-        $token = $user->createToken('auth_token')->plainTextToken;
-        $user->token = $token;
-        $user->save();
-        $status = "success";
-        $response = ['user' => Auth::user(),
-            'token' => $token,
-            'status' => $status];
+        $data['token'] = $user->createToken($request->email)->accessToken;
+        $data['user'] = $user;
+
+        $response = [
+            'status' => 'success',
+            'message' => 'User is created successfully.',
+            'data' => $data,
+        ];
         return response()->json($response);
     }
 
@@ -68,47 +68,45 @@ class AuthController extends Controller
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
-        $credentials = $request->only('email', 'password');
-        if (Auth::attempt($credentials)) {
-            $user = Auth::user();
-            $token = $user->createToken('auth_token')->plainTextToken;
-            $user->token = $token;
-            $user->save();
-            $status = "success";
-            $response = [
-                'user' => $user,
-                'token' => $token,
-                'status' => $status
-            ];
-            return response()->json($response);
+        // Check email exist
+        $user = User::where('email', $request->email)->first();
+
+        // Check password
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json([
+                'status' => 'failed',
+                'message' => 'Invalid credentials'
+            ], 401);
         }
 
+        $data['token'] = $user->createToken($request->email)->accessToken;
+        $data['user'] = $user;
+
         $response = [
-            "errors" => ["email" => ["The provided credentials do not match our records."]]
+            'status' => 'success',
+            'message' => 'User is logged in successfully.',
+            'data' => $data,
         ];
         return response()->json($response);
 
-    }
+}
 
 
-    /**
-     * @OA\Post(
-     *     path="/logout",
-     *     summary="Logout user",
-     *     tags={"Authentication"},
-     *     @OA\Response(response=200, description="Successful logout"),
-     *     @OA\Response(response=400, description="Invalid token")
-     * )
-     */
-    function logout(Request $request)
-    {
-        $user = User::where('token', $request->token)->get()->first();
-        if (isset($user)) {
-            $user->token = '';
-            $user->save();
-            $user->tokens()->delete();
-            return response()->json(["status" => 'success']);
-        }
-        return response()->json(["status" => "something's wrong"]);
-    }
+/**
+ * @OA\Post(
+ *     path="/logout",
+ *     summary="Logout user",
+ *     tags={"Authentication"},
+ *     @OA\Response(response=200, description="Successful logout"),
+ *     @OA\Response(response=400, description="Invalid token")
+ * )
+ */
+function logout(Request $request)
+{
+    auth()->user()->tokens()->delete();
+    return response()->json([
+        'status' => 'success',
+        'message' => 'User is logged out successfully'
+    ], 200);
+}
 }
