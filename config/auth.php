@@ -43,7 +43,6 @@ return [
         'api' => [
             'driver' => 'passport', // Use Passport for API authentication
             'provider' => 'users',
-            'hash' => false,
         ],
     ],
 
