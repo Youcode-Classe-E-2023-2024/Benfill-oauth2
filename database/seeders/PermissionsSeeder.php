@@ -2,10 +2,11 @@
 
 namespace Database\Seeders;
 
+use App\Http\Controllers\RoleController;
+use App\Models\Permission;
+use App\Models\Role;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 
 class PermissionsSeeder extends Seeder
 {
@@ -14,6 +15,7 @@ class PermissionsSeeder extends Seeder
      */
     private $roles = [
         'admin',
+        'user'
     ];
 
     private $permissions = [
@@ -22,6 +24,9 @@ class PermissionsSeeder extends Seeder
         'role-edit',
         'role-delete',
         'update-user-role',
+        'create-user',
+        'update-user',
+        'list-user',
         'delete-user'
     ];
 
@@ -35,6 +40,6 @@ class PermissionsSeeder extends Seeder
             Role::create(['name' => $role]);
         }
 
-        Role::findByName('admin')->givePermissionTo($this->permissions);
+        RoleController::givePermissionsToRole('admin', $this->permissions);
     }
 }
