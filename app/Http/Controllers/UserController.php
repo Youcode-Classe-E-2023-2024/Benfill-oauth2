@@ -40,11 +40,11 @@ class UserController extends Controller
         $validator = $request->validate([
             'name' => 'required|max:255',
             'email' => 'required|email|unique:users',
-            'password' => 'required|string|min:8|confirmed'
+            'password' => 'required|string|min:8'
         ]);
-        if ($validator->fails()) {
+/*        if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
-        }
+        }*/
         $data = $request;
         $user = [
             "name" => $data['name'],
@@ -52,9 +52,9 @@ class UserController extends Controller
             "password" => Hash::make($data["password"])
         ];
 
-        User::create($user);
+        $user = User::create($user);
         $status = "success";
-        $response = ['user' => Auth::user(),
+        $response = ['user' => $user,
             'status' => $status];
         return response()->json($response);
     }
