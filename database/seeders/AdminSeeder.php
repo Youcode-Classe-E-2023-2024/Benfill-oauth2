@@ -21,6 +21,6 @@ class AdminSeeder extends Seeder
             'password' => Hash::make('anass@gmail.com')
         ]);
 
-        RoleController::assignRole($admin->id, ['admin']);
+        RoleController::assignRole($admin->id, 'admin');
     }
 }

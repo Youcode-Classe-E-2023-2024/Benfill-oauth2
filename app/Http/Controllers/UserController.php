@@ -42,9 +42,9 @@ class UserController extends Controller
             'email' => 'required|email|unique:users',
             'password' => 'required|string|min:8'
         ]);
-/*        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }*/
+        /*        if ($validator->fails()) {
+                    return response()->json(['errors' => $validator->errors()], 422);
+                }*/
         $data = $request;
         $user = [
             "name" => $data['name'],
@@ -108,6 +108,18 @@ class UserController extends Controller
     {
         $user = User::find($id);
         $user->delete();
+        return response()->json([
+            'status' => 'success'
+        ]);
+    }
+
+    function assignRole(Request $request)
+    {
+        $user_id = $request->user_id;
+        $role = $request->role;
+
+        RoleController::assignRole($user_id, $role);
+
         return response()->json([
             'status' => 'success'
         ]);

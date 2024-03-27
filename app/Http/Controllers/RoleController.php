@@ -10,15 +10,13 @@ use Illuminate\Http\Request;
 
 class RoleController extends Controller
 {
-    static function assignRole($user, $roles)
+    static function assignRole($user, $role)
     {
-        $rolesIds = Permission::whereIn('name', $roles)->pluck('id')->toArray();
-        foreach ($rolesIds as $role) {
-            UserHasRole::create([
-                'user_id' => $user,
-                'role_id' => $role
-            ]);
-        }
+        $roleId = Role::where('name', $role)->pluck('id');
+        UserHasRole::create([
+            'user_id' => $user,
+            'role_id' => $roleId[0]
+        ]);
     }
 
     static function givePermissionsToRole($role, $permissions)
