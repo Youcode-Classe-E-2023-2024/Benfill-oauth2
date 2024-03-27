@@ -19,35 +19,37 @@ class AuthController extends Controller
      *     @OA\Response(response=400, description="Invalid request")
      * )
      */
+
     function register(Request $request)
     {
-        $validator = $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => 'required|max:255',
             'email' => 'required|email|unique:users',
             'password' => 'required|string|min:8|confirmed'
         ]);
+
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
-        $data = $request;
-        $user = [
-            "name" => $data['name'],
-            "email" => $data['email'],
-            "password" => Hash::make($data["password"])
-        ];
 
-        User::create($user);
+        $data = $request->only('name', 'email', 'password');
+        $data['password'] = Hash::make($data['password']);
 
-        $data['token'] = $user->createToken($request->email)->accessToken;
-        $data['user'] = $user;
+        $user = User::create($data);
+
+        $token = $user->createToken('oauth2')->accessToken;
 
         $response = [
             'status' => 'success',
             'message' => 'User is created successfully.',
-            'data' => $data,
+            'data' => [
+                'user' => $user,
+                'token' => $token,
+            ],
         ];
         return response()->json($response);
     }
+
 
     /**
      * @OA\Post(
@@ -58,9 +60,12 @@ class AuthController extends Controller
      *     @OA\Response(response=400, description="Invalid credentials")
      * )
      */
+
     function login(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $credentials = $request->only('email', 'password');
+
+        $validator = Validator::make($credentials, [
             'email' => 'required|email',
             'password' => 'required|string|min:8'
         ]);
@@ -68,45 +73,44 @@ class AuthController extends Controller
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
-        // Check email exist
-        $user = User::where('email', $request->email)->first();
 
-        // Check password
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+            $token = $user->createToken('oauth2')->accessToken;
+
+            $response = [
+                'status' => 'success',
+                'message' => 'User is logged in successfully.',
+                'data' => [
+                    'user' => $user,
+                    'token' => $token,
+                ],
+            ];
+            return response()->json($response);
+        } else {
             return response()->json([
                 'status' => 'failed',
                 'message' => 'Invalid credentials'
             ], 401);
         }
+    }
 
-        $data['token'] = $user->createToken($request->email)->accessToken;
-        $data['user'] = $user;
 
-        $response = [
+    /**
+     * @OA\Post(
+     *     path="/logout",
+     *     summary="Logout user",
+     *     tags={"Authentication"},
+     *     @OA\Response(response=200, description="Successful logout"),
+     *     @OA\Response(response=400, description="Invalid token")
+     * )
+     */
+    function logout(Request $request)
+    {
+        auth()->user()->tokens()->delete();
+        return response()->json([
             'status' => 'success',
-            'message' => 'User is logged in successfully.',
-            'data' => $data,
-        ];
-        return response()->json($response);
-
-}
-
-
-/**
- * @OA\Post(
- *     path="/logout",
- *     summary="Logout user",
- *     tags={"Authentication"},
- *     @OA\Response(response=200, description="Successful logout"),
- *     @OA\Response(response=400, description="Invalid token")
- * )
- */
-function logout(Request $request)
-{
-    auth()->user()->tokens()->delete();
-    return response()->json([
-        'status' => 'success',
-        'message' => 'User is logged out successfully'
-    ], 200);
-}
+            'message' => 'User is logged out successfully'
+        ], 200);
+    }
 }
