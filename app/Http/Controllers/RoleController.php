@@ -86,4 +86,32 @@ class RoleController extends Controller
         return true;
     }
 
+    function storePermission(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|min:3'
+        ]);
+
+        Permission::create([
+            'name' => $request->permission
+        ]);
+        return response()->json([
+            'status' => 'success'
+        ]);
+    }
+
+    function storeRole(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|min:3'
+        ]);
+
+        Role::create([
+            'name' => $request->permission
+        ]);
+        return response()->json([
+            'status' => 'success'
+        ]);
+    }
+
 }
