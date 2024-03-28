@@ -12,11 +12,32 @@ class AuthController extends Controller
 {
     /**
      * @OA\Post(
-     *     path="/register",
+     *     path="/api/register",
      *     summary="Register a new user",
      *     tags={"Authentication"},
-     *     @OA\Response(response=200, description="Successful registration"),
-     *     @OA\Response(response=400, description="Invalid request")
+     *     @OA\Parameter(
+     *         name="name",
+     *         in="query",
+     *         description="User's name",
+     *         required=true,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="email",
+     *         in="query",
+     *         description="User's email",
+     *         required=true,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="password",
+     *         in="query",
+     *         description="User's password",
+     *         required=true,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(response="201", description="User registered successfully"),
+     *     @OA\Response(response="422", description="Validation errors")
      * )
      */
 
@@ -50,14 +71,27 @@ class AuthController extends Controller
         return response()->json($response);
     }
 
-
     /**
      * @OA\Post(
-     *     path="/login",
-     *     summary="Login user",
+     *     path="/api/login",
+     *     summary="Authenticate user and generate passport token",
+     *     @OA\Parameter(
+     *         name="email",
+     *         in="query",
+     *         description="User's email",
+     *         required=true,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="password",
+     *         in="query",
+     *         description="User's password",
+     *         required=true,
+     *         @OA\Schema(type="string")
+     *     ),
      *     tags={"Authentication"},
-     *     @OA\Response(response=200, description="Successful login"),
-     *     @OA\Response(response=400, description="Invalid credentials")
+     *     @OA\Response(response="200", description="Login successful"),
+     *     @OA\Response(response="401", description="Invalid credentials")
      * )
      */
 
@@ -107,7 +141,7 @@ class AuthController extends Controller
      */
     function logout(Request $request)
     {
-        auth()->user()->tokens()->delete();
+        $request->user()->tokens()->delete();
         return response()->json([
             'status' => 'success',
             'message' => 'User is logged out successfully'
