@@ -31,6 +31,27 @@ class UserController extends Controller
      *     path="/users",
      *     summary="Create New User",
      *     tags={"Users"},
+     *     @OA\Parameter(
+     *         name="name",
+     *         in="query",
+     *         description="User's name",
+     *         required=true,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="email",
+     *         in="query",
+     *         description="User's email",
+     *         required=true,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="password",
+     *         in="query",
+     *         description="User's password",
+     *         required=true,
+     *         @OA\Schema(type="string")
+     *     ),
      *     @SWG\Response(response=200, description="Successful operation"),
      *     @SWG\Response(response=400, description="Invalid request")
      * )
@@ -60,16 +81,7 @@ class UserController extends Controller
     }
 
 
-    /**
-     * @SWG\Put(
-     *     path="/users/{id}",
-     *     summary="Update User",
-     *     tags={"Users"},
-     *     @SWG\Response(response=200, description="Successful operation"),
-     *     @SWG\Response(response=400, description="Invalid request")
-     * )
-     */
-    function update(Request $request, $id)
+    function update(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'string',
@@ -79,13 +91,13 @@ class UserController extends Controller
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
-        $user = User::find($id);
+        $user = User::find($request->id);
 
         if (isset($request->name)) {
             $user->name = $request->name;
         }
         if (isset($request->password)) {
-            $user->name = $request->password;
+            $user->password = $request->password;
         }
 
         $user->save();
@@ -100,18 +112,51 @@ class UserController extends Controller
      *     path="/users/{id}",
      *     summary="Delete User",
      *     tags={"Users"},
+     *     @OA\Parameter(
+     *         name="user_id",
+     *         in="query",
+     *         description="User's id",
+     *         required=true,
+     *         @OA\Schema(type="string")
+     *     ),
      *     @SWG\Response(response=200, description="Successful operation"),
      *     @SWG\Response(response=400, description="Invalid request")
      * )
      */
-    function destroy($id)
+    function destroy(Request $request)
     {
-        $user = User::find($id);
+        $user = User::find($request->id);
         $user->delete();
         return response()->json([
             'status' => 'success'
         ]);
     }
+
+
+    /**
+     * @SWG\Post(
+     *     path="/assignRole",
+     *     summary="Assign Role to User",
+     *     tags={"Users"},
+     *     @OA\Parameter(
+     *         name="user_id",
+     *         in="query",
+     *         description="User's id",
+     *         required=true,
+     *         parameter=true,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="role",
+     *         in="query",
+     *         description="Role's name",
+     *         required=true,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @SWG\Response(response=200, description="Successful operation"),
+     *     @SWG\Response(response=400, description="Invalid request")
+     * )
+     */
 
     function assignRole(Request $request)
     {
@@ -123,5 +168,27 @@ class UserController extends Controller
         return response()->json([
             'status' => 'success'
         ]);
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/user",
+     *     summary="Get logged-in user details",
+     *     tags={"User"},
+     *      @OA\Parameter(
+     *         name="user_id",
+     *         in="query",
+     *         description="User's id",
+     *         required=true,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(response="200", description="Success"),
+     *     security={{"bearerAuth":{}}}
+     * )
+     */
+    public function getUserDetails($id)
+    {
+        $user = User::find($id)->get()->first();
+        return response()->json(['user' => $user], 200);
     }
 }
