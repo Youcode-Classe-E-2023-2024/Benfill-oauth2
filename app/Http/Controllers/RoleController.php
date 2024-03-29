@@ -63,7 +63,7 @@ class RoleController extends Controller
 
     static function userHasRole($user_id, $role)
     {
-        $userRole = UserHasRole::where('user_id', $user_id)->first();
+        $userRole = UserHasRole::where('user_id', $user_id)->get()->first();
 
         if (!$userRole) {
             return response()->json([
@@ -79,7 +79,7 @@ class RoleController extends Controller
             ], 404);
         }
 
-        if ($userRole->role_id !== $role_id) {
+        if ($userRole->role_id !== $role_id || !$userRole) {
             return false;
         }
 
