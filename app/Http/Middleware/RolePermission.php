@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Http\Controllers\RoleController;
+use App\Models\UserHasRole;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,7 +18,10 @@ class RolePermission
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!RoleController::UserHasRole(Auth::id(), 'admin'))
+        /*$user = Auth::user();
+        $checkRole = UserHasRole::where('user_id', $user->id)->get()->first();
+        if (!$checkRole)*/
+        if (RoleController::UserHasRole(Auth::id(), 'admin'))
             return response()->json([
                 'status' => 'error',
                 'message' => 'You are not authorized to perform this action.'
