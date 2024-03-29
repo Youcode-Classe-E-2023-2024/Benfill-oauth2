@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Laravel\Passport\RefreshToken;
+use Laravel\Passport\Token;
 
 class AuthController extends Controller
 {
@@ -107,10 +109,10 @@ class AuthController extends Controller
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
-
+        Auth::shouldUse('web');
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
-            $token = $user->createToken('oauth2')->accessToken;
+            $token = $user->createToken('Personal Access Token')->accessToken;
 
             $response = [
                 'status' => 'success',
@@ -141,10 +143,11 @@ class AuthController extends Controller
      */
     function logout(Request $request)
     {
-        $request->user()->tokens()->delete();
-        return response()->json([
-            'status' => 'success',
-            'message' => 'User is logged out successfully'
-        ], 200);
+        if (Auth::check()) {
+            Auth::user()->token()->revoke();
+            return response()->json(['message' => 'Logged out successfully']);
+        } else {
+            return response()->json(['error' => 'Not authenticated']);
+        }
     }
 }
