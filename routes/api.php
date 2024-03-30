@@ -13,15 +13,25 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api'
 
 Route::middleware('auth:api')->group(function () {
     Route::middleware('isAdmin')->group(function () {
-        Route::get('users', [UserController::class, 'index']);
-        Route::post('users', [UserController::class, 'store']);
-        Route::get('users/{id}', [UserController::class, 'getUserDetails']);
-        Route::put('users/{id}', [UserController::class, 'update']);
-        Route::delete('users/{id}', [UserController::class, 'destroy']);
-        Route::post('assignRole', [UserController::class, 'assignRole']);
-        Route::post('storeRole', [RoleController::class, 'storeRole']);
-        Route::post('storePermission', [RoleController::class, 'storePermission']);
-        Route::post('givePermissionToRole', [RoleController::class, 'givePermissionsToRole']);
+
+        Route::prefix('role')->group(function () {
+            Route::get('/', [UserController::class, 'index']);
+            Route::post('/', [UserController::class, 'store']);
+            Route::get('/{id}', [UserController::class, 'getUserDetails']);
+            Route::put('/{id}', [UserController::class, 'update']);
+            Route::delete('/{id}', [UserController::class, 'destroy']);
+        });
+
+        Route::prefix('role')->group(function () {
+            Route::post('assign', [UserController::class, 'assignRole']);
+            Route::post('store', [RoleController::class, 'storeRole']);
+        });
+
+        Route::prefix('permission')->group(function () {
+            Route::post('store', [RoleController::class, 'storePermission']);
+            Route::post('givenToRole', [RoleController::class, 'givePermissionsToRole']);
+        });
+
     });
 
 });
