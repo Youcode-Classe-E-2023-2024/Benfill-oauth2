@@ -12,7 +12,7 @@ Route::post('register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api');
 
 Route::middleware('auth:api')->group(function () {
-    Route::middleware(RolePermission::class)->group(function () {
+    Route::middleware('isAdmin')->group(function () {
         Route::get('users', [UserController::class, 'index']);
         Route::post('users', [UserController::class, 'store']);
         Route::get('users/{id}', [UserController::class, 'getUserDetails']);
