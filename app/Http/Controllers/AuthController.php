@@ -61,7 +61,7 @@ class AuthController extends Controller
         $user = User::create($data);
 
         $token = $user->createToken('oauth2')->accessToken;
-
+        RoleController::assignRole($user->id, 'user');
         $response = [
             'status' => 'success',
             'message' => 'User is created successfully.',

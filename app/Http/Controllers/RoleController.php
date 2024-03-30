@@ -60,32 +60,6 @@ class RoleController extends Controller
         return true;
     }
 
-
-    static function userHasRole($user_id, $role)
-    {
-        $userRole = UserHasRole::where('user_id', $user_id)->get()->first();
-
-        if (!$userRole) {
-            return response()->json([
-                'error' => 'User role not found'
-            ], 404);
-        }
-
-        $role_id = Role::where('name', $role)->value('id');
-
-        if (!$role_id) {
-            return response()->json([
-                'error' => 'Role not found'
-            ], 404);
-        }
-
-        if ($userRole->role_id !== $role_id || !$userRole) {
-            return false;
-        }
-
-        return true;
-    }
-
     function storePermission(Request $request)
     {
         $request->validate([

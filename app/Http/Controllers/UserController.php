@@ -58,14 +58,16 @@ class UserController extends Controller
      */
     function store(Request $request)
     {
-        $validator = $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => 'required|max:255',
             'email' => 'required|email|unique:users',
             'password' => 'required|string|min:8'
         ]);
-        /*        if ($validator->fails()) {
-                    return response()->json(['errors' => $validator->errors()], 422);
-                }*/
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
         $data = $request;
         $user = [
             "name" => $data['name'],
@@ -74,6 +76,7 @@ class UserController extends Controller
         ];
 
         $user = User::create($user);
+        RoleController::assignRole($user->id, 'user');
         $status = "success";
         $response = ['user' => $user,
             'status' => $status];
