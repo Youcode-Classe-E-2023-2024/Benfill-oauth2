@@ -22,7 +22,7 @@ class RoleController extends Controller
     static function givePermissionsToRole($role, $permissions)
     {
         $role_id = Role::where('name', $role)->get()->first();
-        $permissions_id = RoleHasPermission::where('role_id', $role_id->id)->pluck('permission_id');
+        $permissions_id = Permission::where('name', $permissions)->pluck('permission_id');
         foreach ($permissions_id as $permission) {
             RoleHasPermission::create([
                 'role_id' => $role_id,

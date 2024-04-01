@@ -29,7 +29,7 @@ Route::middleware('auth:api')->group(function () {
 
         Route::prefix('permission')->group(function () {
             Route::post('store', [RoleController::class, 'storePermission']);
-            Route::post('givenToRole', [RoleController::class, 'givePermissionsToRole']);
+            Route::post('givenToRole/{role}/{permissions}', [RoleController::class, 'givePermissionsToRole']);
         });
 
     });
