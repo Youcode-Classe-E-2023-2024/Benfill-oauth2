@@ -14,7 +14,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api'
 Route::middleware('auth:api')->group(function () {
     Route::middleware('isAdmin')->group(function () {
 
-        Route::prefix('role')->group(function () {
+        Route::prefix('users')->group(function () {
             Route::get('/', [UserController::class, 'index']);
             Route::post('/', [UserController::class, 'store']);
             Route::get('/{id}', [UserController::class, 'getUserDetails']);
