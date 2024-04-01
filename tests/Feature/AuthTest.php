@@ -29,10 +29,7 @@ class AuthTest extends TestCase
         $token = $data['data']['token'];
 
         // Login
-        $response = $this->post('/api/login', $credentials)->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-            'Content-Type' => 'application/json',
-        ]);
+        $response = $this->post('/api/login', $credentials);
 
         // Logout
         $response = $this->post('/api/logout')->withHeaders([
