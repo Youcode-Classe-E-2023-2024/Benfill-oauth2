@@ -21,8 +21,9 @@ class RoleController extends Controller
 
     static function givePermissionsToRole($role, $permissions)
     {
-        $role_id = Role::where('name', $role)->get()->first();
-        $permissions_id = Permission::where('name', $permissions)->pluck('permission_id');
+        $role = Role::where('name', $role)->get()->first();
+        $role_id = $role->id;
+        $permissions_id = Permission::where('name', $permissions)->pluck('id');
         foreach ($permissions_id as $permission) {
             RoleHasPermission::create([
                 'role_id' => $role_id,
@@ -41,7 +42,7 @@ class RoleController extends Controller
             ], 404);
         }
 
-        $rolePermissions = RoleHasPermission::where('role_id', $userRole->role_id)->pluck('permission_id');
+        $rolePermissions = RoleHasPermission::where('role_id', $userRole->role_id)->pluck('id');
 
         if ($rolePermissions->isEmpty()) {
             return response()->json([

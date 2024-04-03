@@ -191,7 +191,7 @@ class UserController extends Controller
      */
     public function getUserDetails($id)
     {
-        $user = User::find($id)->get()->first();
+        $user = User::where('id', $id)->get()->first();
         return response()->json(['user' => $user], 200);
     }
 }
