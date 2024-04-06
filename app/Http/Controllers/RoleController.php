@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\RoleHasPermission;
+use App\Models\User;
 use App\Models\UserHasRole;
 use Illuminate\Http\Request;
 
@@ -89,4 +90,19 @@ class RoleController extends Controller
         ]);
     }
 
+
+    function getUserRoleAndPermissions($user_id) {
+        $role_id = UserHasRole::where('user_id', $user_id)->get();
+/*        $role = Role::find($role_id)->get();*/
+/*        $permission_ids = RoleHasPermission::where('role_id', $role_id)->toArray()->get();
+        $permissions = Permission::whereIn('id', $permission_ids)->get();*/
+/*        $data = [
+            'role' => $role->name,
+
+        ];*/
+
+        dd($role_id);
+
+        return response()->json($role);
+    }
 }

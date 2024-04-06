@@ -102,7 +102,7 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
 
         $validator = Validator::make($credentials, [
-            'email' => 'required|email',
+            'email' => 'required|email|exists:users',
             'password' => 'required|string|min:8'
         ]);
 

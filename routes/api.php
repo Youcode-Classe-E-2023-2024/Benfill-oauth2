@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PasswordRecoveryController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\RolePermission;
@@ -10,7 +11,10 @@ use Illuminate\Support\Facades\Route;
 Route::post('login', [AuthController::class, 'login'])->name('login');
 Route::post('register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api');
+Route::get('/test/{id}', [RoleController::class, 'getUserRoleAndPermissions']);
 
+Route::post('passwordRecovery/request', [PasswordREcoveryController::class, 'passwordRecoveryRequest']);
+Route::post('passwordRecovery/change', [PasswordREcoveryController::class, 'passwordRecoveryChange']);
 Route::middleware('auth:api')->group(function () {
     Route::middleware('isAdmin')->group(function () {
 
