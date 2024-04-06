@@ -57,20 +57,33 @@ class PasswordRecoveryController extends Controller
 
     function passwordRecoveryChange(Request $request)
     {
-        $data = $request->only('token', 'id', 'password', 'password_confirmation');
+        $data = $request->only('id', 'password', 'token', 'password_confirmation', 'type');
 
+
+        if ($data['type'] === 'id') {
+            $validator = Validator::make($data, [
+                'id' => 'required|exists:password_recovery_requests',
+                'token' =>'required|string'
+            ]);
+            if ($validator->fails()) {
+                return response()->json(['status' => 'error', 'message' => $validator->errors()], 422);
+            }
+            $passwordRequests = PasswordRecovery::find($data['id']);
+            if (!$passwordRequests) {
+                return response()->json(['status' => 'error', 'message' => "Invalid recovery request ID"], 404);
+            }
+
+            if (!Hash::check($data['token'], $passwordRequests->token)) {
+                return response()->json(['status' => 'error', 'message' => "Invalid recovery request token"], 404);
+            }
+            return response()->json(['status' => 'success', 'message' => "Code valid"], 200);
+        }
+        $passwordRequests = PasswordRecovery::find($data['id']);
         $validator = Validator::make($data, [
-            'id' => 'required|exists:password_recovery_requests',
             'password' => 'required|confirmed'
         ]);
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
-
-        $passwordRequests = PasswordRecovery::find($data['id']);
-
-        if (!$passwordRequests) {
-            return response()->json(['status' => 'error', 'message' => "Invalid recovery request ID"], 404);
+            return response()->json(['status' => 'error', 'message' => $validator->errors()], 422);
         }
 
         $user = User::find($passwordRequests->user_id);
