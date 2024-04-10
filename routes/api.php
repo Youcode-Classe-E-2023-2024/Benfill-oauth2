@@ -17,11 +17,11 @@ Route::post('passwordRecovery/request', [PasswordREcoveryController::class, 'pas
 Route::post('passwordRecovery/change', [PasswordREcoveryController::class, 'passwordRecoveryChange']);
 Route::middleware('auth:api')->group(function () {
 
-    Route::get('/protected-route', function (Request $request) {
-        return response()->json(['message' => 'You have accessed the protected route']);
-    });
 
     Route::middleware('isAdmin')->group(function () {
+        Route::get('/protected-route', function (Request $request) {
+            return response()->json(['message' => 'You have accessed the protected route']);
+        });
 
         Route::prefix('users')->group(function () {
             Route::get('/', [UserController::class, 'index']);

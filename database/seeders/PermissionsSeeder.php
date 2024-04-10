@@ -33,11 +33,11 @@ class PermissionsSeeder extends Seeder
     public function run(): void
     {
         foreach ($this->permissions as $permission) {
-            Permission::create(['name' => $permission]);
+            Permission::create(['permission_name' => $permission]);
         }
 
         foreach ($this->roles as $role) {
-            Role::create(['name' => $role]);
+            Role::create(['role_name' => $role]);
         }
 
         RoleController::givePermissionsToRole('admin', $this->permissions);

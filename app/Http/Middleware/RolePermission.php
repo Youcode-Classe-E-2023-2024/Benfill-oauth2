@@ -26,7 +26,7 @@ class RolePermission
             ], 404);
         }
 
-        $role_id = Role::where('name', 'admin')->value('id');
+        $role_id = Role::where('role_name', 'admin')->value('id');
 
         if (!$role_id) {
             return response()->json([

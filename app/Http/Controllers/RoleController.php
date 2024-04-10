@@ -13,7 +13,7 @@ class RoleController extends Controller
 {
     static function assignRole($user, $role)
     {
-        $roleId = Role::where('name', $role)->pluck('id');
+        $roleId = Role::where('role_name', $role)->pluck('id');
         UserHasRole::create([
             'user_id' => $user,
             'role_id' => $roleId[0]
@@ -22,9 +22,9 @@ class RoleController extends Controller
 
     static function givePermissionsToRole($role, $permissions)
     {
-        $role = Role::where('name', $role)->get()->first();
+        $role = Role::where('role_name', $role)->get()->first();
         $role_id = $role->id;
-        $permissions_id = Permission::where('name', $permissions)->pluck('id');
+        $permissions_id = Permission::where('permission_name', $permissions)->pluck('id');
         foreach ($permissions_id as $permission) {
             RoleHasPermission::create([
                 'role_id' => $role_id,
@@ -51,7 +51,7 @@ class RoleController extends Controller
             ], 404);
         }
 
-        $permissionsIds = Permission::whereIn('name', $permissions)->pluck('id')->toArray();
+        $permissionsIds = Permission::whereIn('permission_name', $permissions)->pluck('id')->toArray();
 
         foreach ($permissionsIds as $permission) {
             if (!$rolePermissions->contains($permission)) {
@@ -83,7 +83,7 @@ class RoleController extends Controller
         ]);
 
         Role::create([
-            'name' => $request->permission
+            'role_name' => $request->permission
         ]);
         return response()->json([
             'status' => 'success'
