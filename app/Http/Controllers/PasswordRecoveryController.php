@@ -14,7 +14,7 @@ use Illuminate\Support\Str;
 
 class PasswordRecoveryController extends Controller
 {
-    function passwordRecoveryRequest(Request $request)
+    function passwordRecoveryRequest(Request $request): \Illuminate\Http\JsonResponse
     {
         $email = $request->only('email');
 
@@ -55,7 +55,7 @@ class PasswordRecoveryController extends Controller
 
     }
 
-    function passwordRecoveryChange(Request $request)
+    function passwordRecoveryChange(Request $request): \Illuminate\Http\JsonResponse
     {
         $data = $request->only('id', 'password', 'token', 'password_confirmation', 'type');
 

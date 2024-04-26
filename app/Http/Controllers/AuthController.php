@@ -113,7 +113,7 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
             $token = $user->createToken('Personal Access Token')->accessToken;
-
+            $user = User::with('roles')->where('id', $user->id)->first();
             $response = [
                 'status' => 'success',
                 'message' => 'User is logged in successfully.',

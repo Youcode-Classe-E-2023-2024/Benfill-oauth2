@@ -11,7 +11,11 @@
         "laravel/passport": "^12.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
+        "nesbot/carbon": "^2.0",
         "spatie/laravel-permission": "^6.4",
+        "srmklive/paypal": "~3.0",
+        "symfony/translation": "^6.0",
+        "youcanpay/payment-sdk": "^0.1.23",
         "zircote/swagger-php": "^4.8"
     },
     "require-dev": {

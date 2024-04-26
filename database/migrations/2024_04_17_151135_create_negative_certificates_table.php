@@ -1,0 +1,31 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('negative_certificates', function (Blueprint $table) {
+            $table->id();
+            $table->string('firstName');
+            $table->string('secondName');
+            $table->string('lastName');
+            $table->enum('status', ['in progress', 'validated', 'rejected']);
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('pack_negative_certificates');
+    }
+};
